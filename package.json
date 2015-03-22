@@ -1,0 +1,16 @@
+{
+  "name": "Elastic-Lists-JS",
+  "version": "0.0.1",
+  "description": "Javascript Port of Elastic Lists for AS3",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Donovan Adams | hydrotik",
+  "license": "MIT",
+  "devDependencies": {
+    "gulp": "^3.8.11",
+    "gulp-tsc": "^0.9.3",
+    "immutable": "^3.6.4"
+  }
+}
