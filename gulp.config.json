@@ -1,0 +1,25 @@
+{
+  "global" : {
+    "dist" : "dist",
+    "build" : "build"
+  },
+  "globs" : {
+    "sass": "src/style/**/*.scss",
+    "templates": "src/templates/**/*.html",
+    "assets": "src/assets/**/*.*",
+    "app": "src/app/**/*.ts",
+    "appWithDefinitions": ["src/**/*.ts", "!src/**/*.ktp.*"],
+    "integration": "src/tests/integration/**/*.js",
+    "index": "src/index.html"
+  },
+  "destinations" : {
+    "css": "/style",
+    "js": "/src",
+    "libs": "/vendor",
+    "assets": "/assets"
+  },
+  "vendoredLibs" : [
+    "vendor/angular/angular.js",
+    "vendor/ui-router/release/angular-ui-router.js"
+  ]
+}

@@ -1,79 +1,40 @@
-var gulp = require('gulp'),
-    $ = require('gulp-load-plugins')(),
-    del = require('del'),
-    karma = require('karma').server,
-    browserSync = require('browser-sync'),
-    sass = require('gulp-sass'),
-    autoprefixer = require('gulp-autoprefixer'),
-    uglify = require('gulp-uglify'),
-    jshint = require('gulp-jshint'),
-    header  = require('gulp-header'),
-    rename = require('gulp-rename'),
-    minifyCSS = require('gulp-minify-css'),
-    package = require('./package.json'),
-    config = require('./gulp.config.json');
+var gulp = require('gulp');
+var $ = require('gulp-load-plugins')();
+var del = require('del');
+var karma = require('karma').server;
+var browserSync = require('browser-sync');
 
 
 // VARIABLES ======================================================
 var isDist = $.util.env.type === 'dist';
 var outputFolder = isDist ? 'dist' : 'build';
 
-var globs = config.globs;
+var globs = {
+  sass: 'src/style/**/*.scss',
+  templates: 'src/templates/**/*.html',
+  assets: 'src/assets/**/*.*',
+  app: 'src/app/**/*.ts',
+  // karma typescript preprocessor generates a bunch of .ktp.ts which gets picked
+  // up by the watch, rinse and repeat
+  appWithDefinitions: ['src/**/*.ts', '!src/**/*.ktp.*'],
+  integration: 'src/tests/integration/**/*.js',
+  index: 'src/index.html'
+};
 
 var destinations = {
-  css: outputFolder + config.destinations.css,
-  js: outputFolder + config.destinations.js,
-  libs: outputFolder + config.destinations.libs,
-  assets: outputFolder + config.destinations.assets,
+  css: outputFolder + "/style",
+  js: outputFolder + "/src",
+  libs: outputFolder + "/vendor",
+  assets: outputFolder + "/assets",
   index: outputFolder
 };
 
 // When adding a 3rd party we want to insert in the html, add it to
 // vendoredLibs, order matters
-var vendoredLibs = config.vendoredLibs;
-
-
-
-
-var banner = [
-  '/*!\n' +
-  ' * <%= package.name %>\n' +
-  ' * <%= package.title %>\n' +
-  ' * <%= package.url %>\n' +
-  ' * @author <%= package.author %>\n' +
-  ' * @version <%= package.version %>\n' +
-  ' * Copyright ' + new Date().getFullYear() + '. <%= package.license %> licensed.\n' +
-  ' */',
-  '\n'
-].join('');
-
-gulp.task('css', function () {
-    return gulp.src('src/scss/style.scss')
-    .pipe(sass({errLogToConsole: true}))
-    .pipe(autoprefixer('last 4 version'))
-    .pipe(gulp.dest('app/assets/css'))
-    .pipe(minifyCSS())
-    .pipe(rename({ suffix: '.min' }))
-    .pipe(header(banner, { package : package }))
-    .pipe(gulp.dest('app/assets/css'))
-    .pipe(browserSync.reload({stream:true}));
-});
-/*
-gulp.task('js',function(){
-  gulp.src('src/js/scripts.js')
-    .pipe(jshint('.jshintrc'))
-    .pipe(jshint.reporter('default'))
-    .pipe(header(banner, { package : package }))
-    .pipe(gulp.dest('app/assets/js'))
-    .pipe(uglify())
-    .pipe(header(banner, { package : package }))
-    .pipe(rename({ suffix: '.min' }))
-    .pipe(gulp.dest('app/assets/js'))
-    .pipe(browserSync.reload({stream:true, once: true}));
-});
-*/
-
-
+var vendoredLibs = [
+  'vendor/angular/angular.js',
+  'vendor/ui-router/release/angular-ui-router.js',
+];
 
 // Will be filled automatically
 var vendoredLibsMin = [];
