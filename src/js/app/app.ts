@@ -4,18 +4,16 @@ module com.hydrotik.elasticlists {
     export class App {
 
         private view: HTMLElement;
-        private perspective: number;
-        private surface: ParallaxSurface[];
 
         /**
         *   Application Facade
         *   
-        *   @param {HTMLElement} scrollableContent The container that will be parallaxed
+        *   @param {HTMLElement} view target container
         */
         constructor(view: HTMLElement) {
             this.view = view;
 
-            this.log('Hello App. Show me ' + this.view);
+            this.log('Initializing Application from ' + this.view);
         }
 
         private log(message: string): void {

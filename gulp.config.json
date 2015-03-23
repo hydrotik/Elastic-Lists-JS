@@ -4,17 +4,16 @@
     "build" : "build"
   },
   "globs" : {
-    "sass": "src/scss/**/*.scss",
-    "templates": "src/templates/**/*.html",
-    "assets": "src/assets/**/*.*",
-    "app": "src/app/**/*.ts",
-    "appWithDefinitions": ["src/**/*.ts", "!src/**/*.ktp.*"],
-    "integration": "src/tests/integration/**/*.js",
-    "index": "src/index.html"
+    "sass": ["src/scss/**/*.scss"],
+    "tsc": ["src/js/app/**/*.ts"],
+    "templates": ["src/templates/**/*.html"],
+    "assets": ["src/assets/**/*.*"],
+    "integration": ["src/tests/integration/**/*.js"],
+    "index": ["src/index.html"]
   },
   "destinations" : {
     "css": "/style",
-    "js": "/src",
+    "js": "/js",
     "libs": "/vendor",
     "assets": "/assets"
   },

@@ -12,7 +12,9 @@ var gulp = require('gulp'),
     package = require('./package.json'),
     config = require('./gulp.config.json'),
     ts = require('gulp-typescript'),
-    typescript = require('typescript');
+    runSequence = require('run-sequence'),
+    merge = require('merge2'),
+    tslint = require('gulp-tslint');
 
 
 // VARIABLES ======================================================
@@ -20,6 +22,8 @@ var isDist = $.util.env.type === 'dist';
 var outputFolder = isDist ? 'dist' : 'build';
 
 var globs = config.globs;
+
+console.log(globs);
 
 var destinations = {
   css: outputFolder + config.destinations.css,
@@ -35,7 +39,6 @@ var vendoredLibs = config.vendoredLibs;
 
 
 
-
 var banner = [
   '/*!\n' +
   ' * <%= package.name %>\n' +
@@ -47,33 +50,6 @@ var banner = [
   ' */',
   '\n'
 ].join('');
-
-gulp.task('css', function () {
-    return gulp.src('src/scss/style.scss')
-    .pipe(sass({errLogToConsole: true}))
-    .pipe(autoprefixer('last 4 version'))
-    .pipe(gulp.dest('app/assets/css'))
-    .pipe(minifyCSS())
-    .pipe(rename({ suffix: '.min' }))
-    .pipe(header(banner, { package : package }))
-    .pipe(gulp.dest('app/assets/css'))
-    .pipe(browserSync.reload({stream:true}));
-});
-/*
-gulp.task('js',function(){
-  gulp.src('src/js/scripts.js')
-    .pipe(jshint('.jshintrc'))
-    .pipe(jshint.reporter('default'))
-    .pipe(header(banner, { package : package }))
-    .pipe(gulp.dest('app/assets/js'))
-    .pipe(uglify())
-    .pipe(header(banner, { package : package }))
-    .pipe(rename({ suffix: '.min' }))
-    .pipe(gulp.dest('app/assets/js'))
-    .pipe(browserSync.reload({stream:true, once: true}));
-});
-*/
-
 
 
 // Will be filled automatically
@@ -111,12 +87,6 @@ vendoredLibs.forEach(function(lib) {
 });
 
 
-var tsProject = typescript.createProject({
-  sortOutput: true,
-  declarationFiles: true,
-  noExternalResolve: false
-});
-
 // TASKS ===========================================================
 
 gulp.task('sass', function () {
@@ -124,16 +94,25 @@ gulp.task('sass', function () {
     .pipe($.sass({style: 'compressed', errLogToConsole: true}))
     .pipe($.autoprefixer())  // defauls to > 1%, last 2 versions, Firefox ESR, Opera 12.1
     .pipe(gulp.dest(destinations.css))
+    .pipe(minifyCSS())
+    .pipe(rename({ suffix: '.min' }))
+    .pipe(header(banner, { package : package }))
+    .pipe(gulp.dest(destinations.css))
     .pipe(browserSync.reload({stream: true}));
 });
 
 gulp.task('ts-lint', function () {
-  return gulp.src(globs.app)
+  /*return gulp.src(globs.tsc)
     .pipe($.tslint())
-    .pipe($.tslint.report('prose', {emitError: true}));
+    .pipe($.tslint.report('prose', {emitError: true}));*/
+
+  return gulp.src(globs.tsc)
+        .pipe(tslint())
+        .pipe(tslint.report('verbose'));
 });
 
 gulp.task('ts-compile', function () {
+  /*
   var tsResult = gulp.src(globs.appWithDefinitions)
     .pipe($.typescript(tsProject));
 
@@ -142,20 +121,25 @@ gulp.task('ts-compile', function () {
     .pipe(isDist ? $.uglify() : $.util.noop())
     .pipe(gulp.dest(destinations.js))
     .pipe(browserSync.reload({stream: true}));
-});
+    */
 
-gulp.task('templates', function () {
-  return gulp.src(globs.templates)
-    .pipe($.minifyHtml({
-      empty: true,
-      spare: true,
-      quotes: true
-    }))
-    .pipe($.ngHtml2js({moduleName: 'templates'}))
-    .pipe($.concat('templates.js'))
-    .pipe(isDist ? $.uglify() : $.util.noop())
-    .pipe(gulp.dest(destinations.js))
-    .pipe(browserSync.reload({stream: true}));
+    // globs.appWithDefinitions
+    var tsResult = gulp.src(globs.tsc)
+                       .pipe(ts({
+                           declarationFiles: true,
+                           noExternalResolve: true
+                       }));
+    /*
+    return tsResult.js.pipe(merge([
+        tsResult.dts.pipe(gulp.dest('release/definitions')),
+        tsResult.js.pipe(gulp.dest(destinations.js))
+    ]))
+*/
+    return tsResult.js.pipe(gulp.dest(destinations.js))
+    .pipe(uglify())
+    .pipe(header(banner, { package : package }))
+    .pipe(rename({ suffix: '.min' }))
+    .pipe(gulp.dest(destinations.js));
 });
 
 gulp.task('clean', function (cb) {
@@ -198,23 +182,22 @@ gulp.task('index', function () {
 });
 
 gulp.task('watch', function() {
-  gulp.watch(globs.sass, 'sass');
-  gulp.watch(globs.appWithDefinitions, gulp.series('ts-lint', 'ts-compile'));
-  gulp.watch(globs.templates, 'templates');
-  gulp.watch(globs.index, 'index');
-  gulp.watch(globs.assets, 'copy-assets');
+  gulp.watch(globs.sass, ['sass']);
+  gulp.watch(globs.tsc, ['ts-lint', 'ts-compile']);
+  gulp.watch(globs.index, ['index']);
+  gulp.watch(globs.assets, ['copy-assets']);
 });
 
 gulp.task(
   'build',
-  gulp.series(
+  runSequence(
     'clean',
-    gulp.parallel('sass', 'copy-assets', 'ts-compile', 'templates', 'copy-vendor'),
+    ['sass', 'copy-assets', 'ts-compile', 'copy-vendor'],
     'index'
   )
 );
 
 gulp.task(
   'default',
-  gulp.series('build', gulp.parallel('browser-sync', 'watch'))
+  runSequence('build', ['browser-sync', 'watch'])
 );
