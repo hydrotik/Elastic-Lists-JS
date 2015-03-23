@@ -1,7 +1,6 @@
 var gulp = require('gulp'),
     $ = require('gulp-load-plugins')(),
     del = require('del'),
-    karma = require('karma').server,
     browserSync = require('browser-sync'),
     sass = require('gulp-sass'),
     autoprefixer = require('gulp-autoprefixer'),
@@ -11,7 +10,9 @@ var gulp = require('gulp'),
     rename = require('gulp-rename'),
     minifyCSS = require('gulp-minify-css'),
     package = require('./package.json'),
-    config = require('./gulp.config.json');
+    config = require('./gulp.config.json'),
+    ts = require('gulp-typescript'),
+    typescript = require('typescript');
 
 
 // VARIABLES ======================================================
@@ -109,13 +110,11 @@ vendoredLibs.forEach(function(lib) {
   ]);
 });
 
-var karma = require('gulp-karma')({
-    configFile: 'karma.conf.js'
-});
 
-var tsProject = $.typescript.createProject({
+var tsProject = typescript.createProject({
+  sortOutput: true,
   declarationFiles: true,
-  noExternalResolve: true
+  noExternalResolve: false
 });
 
 // TASKS ===========================================================
@@ -141,7 +140,6 @@ gulp.task('ts-compile', function () {
   return tsResult.js.pipe(isDist ? $.concat('app.js') : $.util.noop())
     .pipe($.ngAnnotate({gulpWarnings: false}))
     .pipe(isDist ? $.uglify() : $.util.noop())
-    .pipe($.wrap({ src: './iife.txt'}))
     .pipe(gulp.dest(destinations.js))
     .pipe(browserSync.reload({stream: true}));
 });
@@ -164,11 +162,6 @@ gulp.task('clean', function (cb) {
   del(['dist/', 'build/'], cb);
 });
 
-gulp.task('karma-watch', function(cb) {
-  karma.start({
-    configFile: __dirname + '/karma.conf.js'
-  }, cb);
-});
 
 gulp.task('browser-sync', function () {
   return browserSync({
@@ -223,5 +216,5 @@ gulp.task(
 
 gulp.task(
   'default',
-  gulp.series('build', gulp.parallel('browser-sync', 'watch', 'karma-watch'))
+  gulp.series('build', gulp.parallel('browser-sync', 'watch'))
 );

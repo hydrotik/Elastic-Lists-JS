@@ -4,7 +4,7 @@
     "build" : "build"
   },
   "globs" : {
-    "sass": "src/style/**/*.scss",
+    "sass": "src/scss/**/*.scss",
     "templates": "src/templates/**/*.html",
     "assets": "src/assets/**/*.*",
     "app": "src/app/**/*.ts",
@@ -19,7 +19,6 @@
     "assets": "/assets"
   },
   "vendoredLibs" : [
-    "vendor/angular/angular.js",
-    "vendor/ui-router/release/angular-ui-router.js"
+    
   ]
 }
