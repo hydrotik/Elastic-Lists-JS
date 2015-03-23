@@ -14,7 +14,8 @@ var gulp = require('gulp'),
     ts = require('gulp-typescript'),
     runSequence = require('run-sequence'),
     merge = require('merge2'),
-    tslint = require('gulp-tslint');
+    tslint = require('gulp-tslint'),
+    concat = require('gulp-concat');
 
 
 // VARIABLES ======================================================
@@ -127,7 +128,8 @@ gulp.task('ts-compile', function () {
     var tsResult = gulp.src(globs.tsc)
                        .pipe(ts({
                            declarationFiles: true,
-                           noExternalResolve: true
+                           noExternalResolve: true,
+                           sortOutput: true
                        }));
     /*
     return tsResult.js.pipe(merge([
@@ -136,6 +138,7 @@ gulp.task('ts-compile', function () {
     ]))
 */
     return tsResult.js.pipe(gulp.dest(destinations.js))
+    .pipe(concat('app.js'))
     .pipe(uglify())
     .pipe(header(banner, { package : package }))
     .pipe(rename({ suffix: '.min' }))
