@@ -108,7 +108,7 @@ gulp.task('ts-lint', function () {
 
   return gulp.src(globs.tsc)
         .pipe(tslint())
-        .pipe(tslint.report('verbose'));
+        .pipe(tslint.report('prose'));
 });
 
 gulp.task('ts-compile', function () {

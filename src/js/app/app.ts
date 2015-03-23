@@ -1,9 +1,14 @@
+///<reference path='TestModule.ts' />
+
 
 module com.hydrotik.elasticlists {
+
+    import TestModule = com.hydrotik.elasticlists.TestModule;
 
     export class App {
 
         private view: HTMLElement;
+
 
         /**
         *   Application Facade
@@ -22,6 +27,9 @@ module com.hydrotik.elasticlists {
 
         initializeApplication(message:string): void {
             this.log(message);
+
+            var tm:TestModule = new TestModule('my URL');
+
         }
     }
 }
