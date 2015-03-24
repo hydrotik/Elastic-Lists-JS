@@ -15,7 +15,8 @@ var gulp = require('gulp'),
     runSequence = require('run-sequence'),
     merge = require('merge2'),
     tslint = require('gulp-tslint'),
-    concat = require('gulp-concat');
+    concat = require('gulp-concat'),
+    template = require('gulp-template');
 
 
 // VARIABLES ======================================================
@@ -174,7 +175,7 @@ gulp.task('copy-assets', function () {
 
 gulp.task('index', function () {
   var target = gulp.src(globs.index);
-  var _injectPaths = isDist ? injectPaths.dist : injectPaths.dev;
+  /*var _injectPaths = isDist ? injectPaths.dist : injectPaths.dev;
 
   return target.pipe(
     $.inject(gulp.src(_injectPaths, {read: false}), {
@@ -182,6 +183,11 @@ gulp.task('index', function () {
       addRootSlash: false
     })
   ).pipe(gulp.dest(destinations.index));
+*/
+
+
+    return target.pipe(template({footerjs : config.vendor}))
+        .pipe(gulp.dest(destinations.index));
 });
 
 gulp.task('watch', function() {

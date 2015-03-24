@@ -28,6 +28,7 @@
     "gulp-minify-css": "^1.0.0",
     "gulp-rename": "^1.2.0",
     "gulp-sass": "^1.1.0",
+    "gulp-template": "^3.0.0",
     "gulp-tsc": "^0.9.3",
     "gulp-tslint": "^1.4.4",
     "gulp-typescript": "^2.5.0",

@@ -12,7 +12,8 @@
     <link href="//ajax.googleapis.com" rel="dns-prefetch">
     <link href="style/style.min.css" rel="stylesheet">
 
-    <script src="assets/lib/modernizr/modernizr.js"></script>
+    <% _.forEach(footerjs, function(item) { if(!item.footer){%><script src="<%- item.src %>"></script>
+    <%}; }); %>
   </head>
   <body>
 
@@ -43,7 +44,8 @@
 
     </footer>
 
-    <script src="assets/lib/jquery/dist/jquery.min.js"></script>
+    <% _.forEach(footerjs, function(item) { if(item.footer){%><script src="<%- item.src %>"></script>
+    <%}; }); %>
     
     <script src="js/app.min.js"></script>
 
